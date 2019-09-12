@@ -685,3 +685,40 @@ function choose(...)
 	local arg = {...}
 	return arg[math.random(1, table.maxn(arg))]
 end 
+
+local skillStage = {
+	{minskill = 0, maxskill = 30, multiplier = 20},
+	{minskill = 31, maxskill = 50, multiplier = 10},
+	{minskill = 51, multiplier = 5},
+}
+local mlStage = {
+	{minml = 0, maxml = 30, multiplier = 20},
+	{minml = 31, maxml = 50, multiplier = 10},
+	{minml = 51, multiplier = 5},
+}
+
+function getSkillStage(level)
+	local stage = getConfigInfo('rateSkill')
+	for _, info in pairs(skillStage) do
+		local maxlevel = info.maxskill and info.maxskill or level
+		if level >= info.minskill and level <= maxlevel then
+			stage = info.multiplier
+			break
+		end
+	end
+
+	return stage
+end
+
+function getMagicLevelStage(level)
+	local stage = getConfigInfo('rateMagic')
+	for _, info in pairs(mlStage) do
+		local maxlevel = info.maxml and info.maxml or level
+		if level >= info.minml and level <= maxlevel then
+			stage = info.multiplier
+			break
+		end
+	end
+
+	return stage
+end

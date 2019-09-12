@@ -41,6 +41,11 @@ function onLogin(cid)
 		doSendMagicEffect(getCreaturePosition(cid), CONST_ME_TELEPORT)
 	end
 
+	for skill = SKILL_FIST, SKILL_FISHING do
+		doPlayerSetRate(cid, skill, getSkillStage(getPlayerSkillLevel(cid, skill)))
+	end
+	doPlayerSetMagicRate(cid, getMagicLevelStage(getPlayerMagLevel(cid, true)))
+
 	registerCreatureEvent(cid, "Mail")
 	registerCreatureEvent(cid, "GuildMotd")
 
