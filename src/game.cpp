@@ -5756,6 +5756,22 @@ double Game::getExperienceStage(uint32_t level, double divider/* = 1.*/)
 	return stages[level] * divider;
 }
 
+double Game::getSkillStage(uint32_t level)
+{
+	if(lastStageSkill && level >= lastStageSkill)
+		return stagesSkill[lastStageSkill];
+
+	return stagesSkill[level];
+}
+
+double Game::getMagicLevelStage(uint32_t level)
+{
+	if(lastStageMl && level >= lastStageMl)
+		return stagesMl[lastStageMl];
+
+	return stagesMl[level];
+}
+
 bool Game::loadExperienceStages()
 {
 	if(!g_config.getBool(ConfigManager::EXPERIENCE_STAGES))
@@ -5860,6 +5876,207 @@ bool Game::loadExperienceStages()
 			{
 				for(int32_t i = low; i <= high; i++)
 					stages[i] = mul;
+			}
+		}
+
+		q = q->next;
+	}
+
+	xmlFreeDoc(doc);
+	return true;
+}
+
+bool Game::loadSkillStages()
+{
+	xmlDocPtr doc = xmlParseFile(getFilePath(FILE_TYPE_XML, "skillstages.xml").c_str());
+	if(!doc)
+	{
+		std::clog << "[Warning - Game::loadSkillstages] Cannot load stages file." << std::endl;
+		std::clog << getLastXMLError() << std::endl;
+		return false;
+	}
+
+	xmlNodePtr q, p, root = xmlDocGetRootElement(doc);
+	if(xmlStrcmp(root->name, (const xmlChar*)"skillstages"))
+	{
+		std::clog << "[Error - Game::loadSkillstages] Malformed stages file" << std::endl;
+		xmlFreeDoc(doc);
+		return false;
+	}
+
+	int32_t intValue, low = 0, high = 0;
+	float floatValue, mul = 1.0f, defStageMultiplier;
+	std::string strValue;
+
+	lastStageSkill = 0;
+	stagesSkill.clear();
+
+	q = root->children;
+	while(q)
+	{
+		if(!xmlStrcmp(q->name, (const xmlChar*)"skills"))
+		{
+			defStageMultiplier = 1.0f;
+			if(readXMLFloat(q, "multiplier", floatValue))
+				defStageMultiplier = floatValue;
+
+			p = q->children;
+			while(p)
+			{
+				if(!xmlStrcmp(p->name, (const xmlChar*)"skill"))
+				{
+					low = 1;
+					if(readXMLInteger(p, "minskill", intValue) || readXMLInteger(p, "minSkill", intValue))
+						low = intValue;
+
+					high = 0;
+					if(readXMLInteger(p, "maxskill", intValue) || readXMLInteger(p, "maxSkill", intValue))
+						high = intValue;
+					else
+						lastStageSkill = low;
+
+					mul = 1.0f;
+					if(readXMLFloat(p, "multiplier", floatValue))
+						mul = floatValue;
+
+					mul *= defStageMultiplier;
+					if(lastStageSkill && lastStageSkill == (uint32_t)low)
+						stagesSkill[lastStageSkill] = mul;
+					else
+					{
+						for(int32_t i = low; i <= high; i++)
+							stagesSkill[i] = mul;
+					}
+				}
+
+				p = p->next;
+			}
+		}
+
+		if(!xmlStrcmp(q->name, (const xmlChar*)"skill"))
+		{
+			low = 1;
+			if(readXMLInteger(q, "minskill", intValue))
+				low = intValue;
+			else
+
+			high = 0;
+			if(readXMLInteger(q, "maxskill", intValue))
+				high = intValue;
+			else
+				lastStageSkill = low;
+
+			mul = 1.0f;
+			if(readXMLFloat(q, "multiplier", floatValue))
+				mul = floatValue;
+
+			if(lastStageSkill && lastStageSkill == (uint32_t)low)
+				stagesSkill[lastStageSkill] = mul;
+			else
+			{
+				for(int32_t i = low; i <= high; i++)
+					stagesSkill[i] = mul;
+			}
+		}
+
+		q = q->next;
+	}
+
+	xmlFreeDoc(doc);
+	return true;
+}
+
+bool Game::loadMagicLevelStages()
+{
+	xmlDocPtr doc = xmlParseFile(getFilePath(FILE_TYPE_XML, "skillstages.xml").c_str());
+	if(!doc)
+	{
+		std::clog << "[Warning - Game::loadMLstages] Cannot load stages file." << std::endl;
+		std::clog << getLastXMLError() << std::endl;
+		return false;
+	}
+
+	xmlNodePtr q, p, root = xmlDocGetRootElement(doc);
+	if(xmlStrcmp(root->name, (const xmlChar*)"skillstages"))
+	{
+		std::clog << "[Error - Game::loadMLstages] Malformed stages file" << std::endl;
+		xmlFreeDoc(doc);
+		return false;
+	}
+
+	int32_t intValue, low = 0, high = 0;
+	float floatValue, mul = 1.0f, defStageMultiplier;
+	std::string strValue;
+
+	lastStageMl = 0;
+	stagesMl.clear();
+
+	q = root->children;
+	while(q)
+	{
+		if(!xmlStrcmp(q->name, (const xmlChar*)"magiclevel"))
+		{
+
+			defStageMultiplier = 1.0f;
+			if(readXMLFloat(q, "multiplier", floatValue))
+				defStageMultiplier = floatValue;
+
+			p = q->children;
+			while(p)
+			{
+				if(!xmlStrcmp(p->name, (const xmlChar*)"ml"))
+				{
+					low = 1;
+					if(readXMLInteger(p, "minmagic", intValue) || readXMLInteger(p, "minMagic", intValue))
+						low = intValue;
+
+					high = 0;
+					if(readXMLInteger(p, "maxmagic", intValue) || readXMLInteger(p, "maxMagic", intValue))
+						high = intValue;
+					else
+						lastStageMl = low;
+
+					mul = 1.0f;
+					if(readXMLFloat(p, "multiplier", floatValue))
+						mul = floatValue;
+
+					mul *= defStageMultiplier;
+					if(lastStageMl && lastStageMl == (uint32_t)low)
+						stagesMl[lastStageMl] = mul;
+					else
+					{
+						for(int32_t i = low; i <= high; i++)
+							stagesMl[i] = mul;
+					}
+				}
+
+				p = p->next;
+			}
+		}
+
+		if(!xmlStrcmp(q->name, (const xmlChar*)"ml"))
+		{
+			low = 1;
+			if(readXMLInteger(q, "minmagic", intValue))
+				low = intValue;
+			else
+
+			high = 0;
+			if(readXMLInteger(q, "maxmagic", intValue))
+				high = intValue;
+			else
+				lastStageMl = low;
+
+			mul = 1.0f;
+			if(readXMLFloat(q, "multiplier", floatValue))
+				mul = floatValue;
+
+			if(lastStageMl && lastStageMl == (uint32_t)low)
+				stagesMl[lastStageMl] = mul;
+			else
+			{
+				for(int32_t i = low; i <= high; i++)
+					stagesMl[i] = mul;
 			}
 		}
 
@@ -6194,7 +6411,7 @@ bool Game::reloadInfo(ReloadInfo_t reload, uint32_t playerId/* = 0*/)
 
 		case RELOAD_STAGES:
 		{
-			if(loadExperienceStages())
+			if(loadExperienceStages() && loadSkillStages() && loadMagicLevelStages())
 				done = true;
 			else
 				std::clog << "[Error - Game::reloadInfo] Failed to reload stages." << std::endl;

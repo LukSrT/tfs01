@@ -2386,6 +2386,12 @@ void LuaInterface::registerFunctions()
 	//getExperienceStage(level)
 	lua_register(m_luaState, "getExperienceStage", LuaInterface::luaGetExperienceStage);
 
+	//getSkillStage(level)
+	lua_register(m_luaState, "getSkillStage", LuaInterface::luaGetSkillStage);
+
+	//getMagicLevelStage(level)
+	lua_register(m_luaState, "getMagicLevelStage", LuaInterface::luaGetMagicLevelStage);
+
 	//getDataDir()
 	lua_register(m_luaState, "getDataDir", LuaInterface::luaGetDataDir);
 
@@ -10579,6 +10585,20 @@ int32_t LuaInterface::luaGetExperienceStage(lua_State* L)
 		divider = popFloatNumber(L);
 
 	lua_pushnumber(L, g_game.getExperienceStage(popNumber(L), divider));
+	return 1;
+}
+
+int32_t LuaInterface::luaGetSkillStage(lua_State* L)
+{
+	//getSkillStage(level)
+	lua_pushnumber(L, g_game.getSkillStage(popNumber(L)));
+	return 1;
+}
+
+int32_t LuaInterface::luaGetMagicLevelStage(lua_State* L)
+{
+	//getMagicLevelStage(level)
+	lua_pushnumber(L, g_game.getMagicLevelStage(popNumber(L)));
 	return 1;
 }
 

@@ -633,7 +633,7 @@ void Player::addSkillAdvance(skills_t skill, uint32_t count, bool useMultiplier/
 		return;
 
 	if(useMultiplier)
-		count = uint32_t((double)count * rates[skill] * g_config.getDouble(ConfigManager::RATE_SKILL));
+		count = uint32_t((double)count * rates[skill] * g_game.getSkillStage(skills[skill][SKILL_LEVEL]));
 
 	std::stringstream s;
 	while(skills[skill][SKILL_TRIES] + count >= nextReqTries)
@@ -1887,7 +1887,7 @@ void Player::addManaSpent(uint64_t amount, bool useMultiplier/* = true*/)
 		return;
 
 	if(useMultiplier)
-		amount = uint64_t((double)amount * rates[SKILL__MAGLEVEL] * g_config.getDouble(ConfigManager::RATE_MAGIC));
+		amount = uint64_t((double)amount * rates[SKILL__MAGLEVEL] * g_game.getMagicLevelStage(magLevel));
 
 	bool advance = false;
 	while(manaSpent + amount >= nextReqMana)

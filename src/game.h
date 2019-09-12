@@ -609,6 +609,12 @@ class Game
 		bool loadExperienceStages();
 		double getExperienceStage(uint32_t level, double divider = 1.);
 
+		bool loadSkillStages();
+		double getSkillStage(uint32_t level);
+
+		bool loadMagicLevelStages();
+		double getMagicLevelStage(uint32_t level);
+
 		inline StageList::const_iterator getFirstStage() const {return stages.begin();}
 		inline StageList::const_iterator getLastStage() const {return stages.end();}
 		size_t getStagesCount() const {return stages.size();}
@@ -679,6 +685,12 @@ class Game
 
 		StageList stages;
 		uint32_t lastStageLevel;
+
+		std::map<uint32_t, uint32_t> stagesSkill;
+		std::map<uint32_t, uint32_t> stagesMl;
+
+		uint32_t lastStageSkill;
+		uint32_t lastStageMl;
 
 		Highscore highscoreStorage[9];
 		time_t lastHighscoreCheck;

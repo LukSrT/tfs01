@@ -551,6 +551,14 @@ void otserv(StringVec, ServiceManager* services)
 	if(!g_game.loadExperienceStages())
 		startupErrorMessage("Unable to load experience stages!");
 
+	std::clog << ">> Loading skill stages" << std::endl;
+	if(!g_game.loadSkillStages())
+		startupErrorMessage("Unable to load skill stages!");
+
+	std::clog << ">> Loading ml stages" << std::endl;
+	if(!g_game.loadMagicLevelStages())
+		startupErrorMessage("Unable to load ml stages!");
+
 	std::clog << ">> Loading monsters" << std::endl;
 	if(!g_monsters.loadFromXml())
 	{
